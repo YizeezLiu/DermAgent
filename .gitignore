@@ -1,0 +1,76 @@
+# DermAgent .gitignore
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+
+# ============================================
+# Environments & Secrets
+# ============================================
+.env
+.env.local
+.venv
+venv/
+
+# ============================================
+# IDEs & Editors
+# ============================================
+.idea/
+.vscode/
+.cursor/
+.cursorrules
+.claude/
+*.swp
+*.swo
+*~
+
+# ============================================
+# Project-Specific
+# ============================================
+
+# Logs & temp
+logs/
+*.log
+temp/
+tmp/
+
+# Model weights
+model-weights/
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+
+# Vector database
+qdrant_storage/
+qdrant_server_storage/
+*.faiss
+
+# Large data files
+*.npy
+*.npz
+*.pkl
+*.pickle
+
+# Generated outputs
+results/
+
+# Gradio
+.gradio/
+flagged/
+
+# ============================================
+# OS-Specific
+# ============================================
+.DS_Store
+Thumbs.db

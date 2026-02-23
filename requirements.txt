@@ -1,0 +1,55 @@
+# =============================================================================
+# DermAgent — Requirements
+# Python 3.10+
+# =============================================================================
+#
+# Install PyTorch first (match your CUDA version):
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+#
+# Then:
+#   pip install -r requirements.txt
+# =============================================================================
+
+# --- LangChain / LangGraph Agent Framework ---
+langchain-core>=0.3.0
+langchain-openai>=0.3.0
+langgraph>=0.2.0
+
+# --- HuggingFace Ecosystem ---
+transformers>=4.45.0
+accelerate>=1.0.0
+huggingface-hub>=0.25.0
+tokenizers>=0.20.0
+safetensors>=0.4.0
+
+# --- Vision-Language Models ---
+open_clip_torch>=2.26.0
+timm>=1.0.0
+einops>=0.8.0
+
+# --- Vector Database (RAG) ---
+qdrant-client>=1.9.0
+
+# --- API Clients ---
+openai>=1.30.0
+python-dotenv>=1.0.0
+
+# --- Image Processing ---
+Pillow>=10.0.0
+
+# --- ML Metrics ---
+scikit-learn>=1.5.0
+nltk>=3.9.0
+rouge-score>=0.1.2
+
+# --- Retry / Resilience ---
+tenacity>=8.2.0
+
+# --- Data & Utilities ---
+numpy>=1.26.0
+pandas>=2.1.0
+tqdm>=4.66.0
+pyyaml>=6.0
+
+# --- Optional: Flash Attention (Qwen3-VL / DermoGPT speedup) ---
+# pip install flash-attn --no-build-isolation

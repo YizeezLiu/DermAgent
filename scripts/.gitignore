@@ -1,0 +1,17 @@
+# Only track paper-relevant scripts; ignore everything else
+*
+
+# Python runners for paper experiments
+!run_task1_ham10000_500_agent.py
+!run_task1_snu_500_agent.py
+!run_task2_concept_agent.py
+!run_task3_captioning_agent.py
+
+# Shell scripts for paper experiments (Table 1 & Table 2)
+!run_task1_ham10000_500_agent_dermogpt_full_critic.sh
+!run_task1_snu_500_critic.sh
+!run_task2_task3_agent_critic.sh
+!run_task3_loo_ablation.sh
+
+# Keep this .gitignore
+!.gitignore

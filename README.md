@@ -145,10 +145,6 @@ Models that must be manually placed in `model-weights/`:
 
 Total GPU requirement: ~20-22GB for all tools loaded simultaneously.
 
-## Reproducing Paper Results
-
-All scripts use GPT-4o as the LLM controller with 6 tools (`panderm, make, dermogpt_vqa, rag, text_rag, ontology`), Critic enabled (max 2 retries), and image reinjection on retry. Override settings via environment variables (e.g., `CUDA_VISIBLE_DEVICES=0,1 MAX_SAMPLES=10 bash scripts/...`).
-
 ### Table 1: Main Results
 
 | Model | Type | HAM10000 (Acc.) | SNU (Acc.) | Derm7pt (F1-Macro) | SkinCon (F1-Macro) | SkinCAP (ROUGE-L) |

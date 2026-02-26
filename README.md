@@ -81,13 +81,13 @@ The following external code/data directories are required but not included in th
 
 | Directory | Purpose | How to Obtain |
 |-----------|---------|---------------|
-| `Derm1M/src/` | Custom OpenCLIP fork for PanDerm & RAG encoders | Clone from the [Derm1M repository](https://github.com/SiyiChen-MSRA/Derm1M) |
-| `MAKE/src/` | Custom OpenCLIP fork for MAKE concept annotation | Clone from the [MAKE repository](https://github.com/KaiHe-better/MAKE) |
+| `Derm1M/src/` | Custom OpenCLIP fork for PanDerm & RAG encoders | Clone from the [Derm1M repository](https://github.com/SiyuanYan1/Derm1M) |
+| `MAKE/src/` | Custom OpenCLIP fork for MAKE concept annotation | Clone from the [MAKE repository](https://github.com/SiyuanYan1/MAKE) |
 | `MAKE/concept_annotation/term_lists/ConceptTerms.json` | Concept term definitions for MAKE | Included in the MAKE repository above |
-| `model-weights/DermoGPT-RL` | DermoGPT-RL fine-tuned model weights | Download from the [DermoGPT repository](https://github.com/SiyiChen-MSRA/DermoGPT) |
+| `model-weights/DermoGPT-RL` | DermoGPT-RL fine-tuned model weights | Download from the [DermoGPT repository](https://github.com/mendicant04/DermoGPT) |
 | `RAG/dermnet_chunks_cleaned.json` | DermNet guideline chunks for Text RAG | See Text RAG build instructions below |
 | `RAG/mayo_chunks_cleaned.json` | Mayo Clinic guideline chunks for Text RAG | See Text RAG build instructions below |
-| `datasets/Derm1M/` | Derm1M dataset for building image RAG index | Download from [Derm1M](https://github.com/SiyiChen-MSRA/Derm1M) |
+| `datasets/Derm1M/` | Derm1M dataset for building image RAG index | Download from [Derm1M](https://github.com/SiyuanYan1/Derm1M) |
 
 For Text RAG models, pre-download the embedding and reranker models into `model-weights/`:
 
@@ -135,9 +135,9 @@ python scripts/build_qdrant_rag.py
 ### 6. Model Weights
 
 Most tool models are auto-downloaded from HuggingFace on first use:
-- **PanDerm**: `redlessone/DermLIP_PanDerm-base-w-PubMed-256` (~2GB VRAM)
-- **MAKE**: `xieji-x/MAKE` (~2GB VRAM)
-- **Qwen3-VL**: `Qwen/Qwen3-VL-8B-Instruct` (~16GB VRAM, bfloat16)
+- **PanDerm**: [DermLIP_PanDerm-base-w-PubMed-256](https://huggingface.co/redlessone/DermLIP_PanDerm-base-w-PubMed-256) (~2GB VRAM)
+- **MAKE**: [MAKE](https://huggingface.co/xieji-x/MAKE) (~2GB VRAM)
+- **Qwen3-VL**: [Qwen3-VL-8B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) (~16GB VRAM, bfloat16)
 
 Models that must be manually placed in `model-weights/`:
 - **DermoGPT-RL**: See Step 3 above (~16GB VRAM, bfloat16)

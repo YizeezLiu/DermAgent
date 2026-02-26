@@ -178,7 +178,7 @@ All scripts use GPT-4o as the LLM controller with 6 tools (`panderm, make, dermo
 | GPT-5.2 | General MLLM | 0.3598 | 0.1480 | 0.5386 | 0.2662 | 0.1235 |
 | MDAgents | Medical Agent | 0.1682 | 0.1140 | 0.3614 | 0.2393 | 0.1199 |
 | MedAgent-Pro | Medical Agent | 0.5763 | 0.1160 | 0.6482 | 0.1834 | 0.1148 |
-| **DermAgent (Ours)** | **Agent** | **0.6183** | **0.3260** | **0.6506** | **0.3295** | **0.1948** |
+| **DermAgent (Ours)** | **Medical Agent** | **0.6183** | **0.3260** | **0.6506** | **0.3295** | **0.1948** |
 
 Commands to reproduce DermAgent results:
 

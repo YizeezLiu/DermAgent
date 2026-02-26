@@ -6,25 +6,9 @@ DermAgent orchestrates seven specialist tools (PanDerm, MAKE, DermoGPT, Qwen3-VL
 
 ## Architecture
 
-```
-User Query + Image
-       |
-       v
-  LLM Controller (GPT-4o)
-       |
-   [Plan] --> [Execute] --> [Reflect/Critic]
-       |           |               |
-       |     +-----+-----+        |
-       |     |     |     |        |
-       v     v     v     v        v
-   PanDerm MAKE DermoGPT RAG   Critic
-   (classify)(concepts)(VQA)(retrieve) (verify)
-       |     |     |     |        |
-       +-----+-----+-----+--------+
-       |
-       v
-  Final Response with Evidence Chain
-```
+<p align="center">
+  <img src="assets/framework.png" width="85%" alt="DermAgent Architecture">
+</p>
 
 ## Project Structure
 

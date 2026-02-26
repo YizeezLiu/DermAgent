@@ -4,17 +4,10 @@ Skin Agent - Multi-modal AI Agent for Dermatological Diagnosis.
 Built on LangChain/LangGraph framework with integrated dermatology tools.
 
 Modules:
-- agent: Interactive agent for general use
 - benchmark_agent: Optimized agent for benchmark evaluation
 - tracing: Tool call logging and debugging
 - tools: Dermatology tool implementations
 """
-
-# Interactive Agent (optional — not required for benchmark runs)
-try:
-    from .agent import create_agent, run_agent, SkinAgentState
-except ImportError:
-    create_agent = run_agent = SkinAgentState = None
 
 # Benchmark Agent
 from .benchmark_agent import (
@@ -51,15 +44,13 @@ from .profiler import (
 from .tools import (
     PanDermTool,
     MAKETool,
-    Qwen3VLTool,
+    DermoGPTTool,
     RAGTool,
+    TextRAGTool,
+    OntologyTool,
 )
 
 __all__ = [
-    # Interactive Agent
-    "create_agent",
-    "run_agent",
-    "SkinAgentState",
     # Benchmark Agent
     "create_benchmark_agent",
     "BenchmarkRunner",
@@ -83,6 +74,8 @@ __all__ = [
     # Tools
     "PanDermTool",
     "MAKETool",
-    "Qwen3VLTool",
+    "DermoGPTTool",
     "RAGTool",
+    "TextRAGTool",
+    "OntologyTool",
 ]

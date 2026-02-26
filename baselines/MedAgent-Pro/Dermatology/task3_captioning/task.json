@@ -1,0 +1,4 @@
+{
+    "input": "Clinical or dermoscopic skin image",
+    "disease": "Generate a comprehensive clinical description of the skin lesion including morphology, color, structure, border characteristics, and potential diagnosis"
+}

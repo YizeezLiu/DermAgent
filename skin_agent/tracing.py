@@ -1,6 +1,6 @@
 """
-工具调用日志系统
-记录完整的 Agent 推理流程，便于调试和分析
+Tool call logging system.
+Records the complete agent reasoning flow for debugging and analysis.
 """
 
 import json
@@ -21,7 +21,7 @@ from langchain_core.outputs import LLMResult
 
 @dataclass
 class ToolCall:
-    """单次工具调用记录"""
+    """Single tool call record."""
     tool_name: str
     arguments: Dict[str, Any]
     result: Any
@@ -32,7 +32,7 @@ class ToolCall:
 
 @dataclass
 class AgentStep:
-    """Agent 单步记录（一次 LLM 调用 + 可能的工具调用）"""
+    """Single agent step (one LLM call + possible tool calls)."""
     step_number: int
     llm_input_messages: List[Dict]
     llm_output: str
@@ -42,35 +42,35 @@ class AgentStep:
 
 @dataclass
 class CriticRetryStep:
-    """Critic retry 事件记录 - 记录完整的 critic 重试流程"""
-    retry_number: int  # 第几次 retry (1, 2, ...)
-    critic_feedback: str  # 原始 critic 反馈（不含 LLM summary）
+    """Critic retry event record - captures the full critic retry flow."""
+    retry_number: int  # Which retry (1, 2, ...)
+    critic_feedback: str  # Raw critic feedback (without LLM summary)
     evidence_summary: Optional[Dict[str, Any]] = None  # LLM summary (if enabled)
-    image_reinjected: bool = False  # 是否重新注入了图像
-    image_analysis: str = ""  # LLM 对图像的分析描述 (when image_reinjected=True)
-    llm_response_after_retry: str = ""  # LLM 对 retry 的响应 (tool calls or final answer)
+    image_reinjected: bool = False  # Whether the image was reinjected
+    image_analysis: str = ""  # LLM image analysis description (when image_reinjected=True)
+    llm_response_after_retry: str = ""  # LLM response after retry (tool calls or final answer)
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
 
 
 @dataclass
 class AgentTrace:
-    """完整的 Agent 执行记录"""
+    """Complete agent execution record."""
     trace_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
     task_type: str = ""
     dataset: str = ""
     image_path: str = ""
     user_query: str = ""
 
-    # 执行过程
+    # Execution process
     steps: List[AgentStep] = field(default_factory=list)
 
-    # 最终结果
+    # Final result
     final_response: str = ""
     parsed_answer: Any = None
     ground_truth: Any = None
     correct: Optional[bool] = None
 
-    # 元信息
+    # Metadata
     model: str = "gpt-4o"
     temperature: float = 0.1
     start_time: str = field(default_factory=lambda: datetime.now().isoformat())
@@ -87,7 +87,7 @@ class AgentTrace:
     # Format: [{"summary": str, "duration_ms": float, "timestamp": str}, ...]
     evidence_summaries: List[Dict[str, Any]] = field(default_factory=list)
     
-    # Critic retry steps (完整流程记录，包含 summary + image reinject + LLM response)
+    # Critic retry steps (full flow: summary + image reinject + LLM response)
     critic_retry_steps: List["CriticRetryStep"] = field(default_factory=list)
     
     # Critic retry options used
@@ -98,17 +98,17 @@ class AgentTrace:
     profiling: Optional[Dict[str, Any]] = None
     
     def add_step(self, step: AgentStep):
-        """添加一个执行步骤"""
+        """Add an execution step."""
         self.steps.append(step)
         self.total_tool_calls += len(step.tool_calls)
     
     def finalize(self, final_response: str, parsed_answer: Any = None):
-        """完成 trace 记录"""
+        """Finalize the trace record."""
         self.final_response = final_response
         self.parsed_answer = parsed_answer
         self.end_time = datetime.now().isoformat()
         
-        # 计算总时长
+        # Calculate total duration
         start = datetime.fromisoformat(self.start_time)
         end = datetime.fromisoformat(self.end_time)
         self.total_duration_ms = (end - start).total_seconds() * 1000
@@ -123,7 +123,7 @@ class AgentTrace:
             pass
     
     def to_dict(self) -> Dict:
-        """转为可序列化的字典（摘要版）"""
+        """Convert to serializable dict (summary version)."""
         return {
             "trace_id": self.trace_id,
             "task_type": self.task_type,
@@ -158,7 +158,7 @@ class AgentTrace:
         }
     
     def to_detailed_dict(self) -> Dict:
-        """完整详细版本（用于保存）"""
+        """Full detailed version (for saving)."""
         return {
             "trace_id": self.trace_id,
             "task_type": self.task_type,
@@ -199,7 +199,7 @@ class AgentTrace:
 # =============================================================================
 
 class TraceLogger:
-    """日志管理器"""
+    """Trace log manager."""
     
     def __init__(self, log_dir: str = "./traces"):
         self.log_dir = Path(log_dir)
@@ -214,7 +214,7 @@ class TraceLogger:
         dataset: str = "",
         model: str = "gpt-4o",
     ) -> AgentTrace:
-        """创建新的 trace"""
+        """Create a new trace."""
         trace = AgentTrace(
             task_type=task_type,
             dataset=dataset,
@@ -226,7 +226,7 @@ class TraceLogger:
         return trace
     
     def save_trace(self, trace: AgentTrace, detailed: bool = True) -> Path:
-        """保存单个 trace 到文件"""
+        """Save a single trace to file."""
         filename = f"{trace.trace_id}_{trace.task_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         filepath = self.log_dir / filename
         
@@ -238,7 +238,7 @@ class TraceLogger:
         return filepath
     
     def save_all(self, filename: str = None) -> Path:
-        """保存所有 traces 到一个文件"""
+        """Save all traces to a single file."""
         if filename is None:
             filename = f"traces_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         
@@ -255,7 +255,7 @@ class TraceLogger:
         return filepath
     
     def print_trace_summary(self, trace: AgentTrace):
-        """打印 trace 摘要到控制台"""
+        """Print trace summary to console."""
         print(f"\n{'='*60}")
         print(f"Trace ID: {trace.trace_id}")
         print(f"Task: {trace.task_type} | Dataset: {trace.dataset}")
@@ -284,7 +284,7 @@ class TraceLogger:
         print(f"{'='*60}\n")
     
     def get_summary_stats(self) -> Dict[str, Any]:
-        """获取所有 traces 的统计摘要"""
+        """Get summary statistics for all traces."""
         if not self.traces:
             return {"total": 0}
         
@@ -306,7 +306,7 @@ class TraceLogger:
 # =============================================================================
 
 class TracingCallback(BaseCallbackHandler):
-    """LangChain 回调，自动记录工具调用"""
+    """LangChain callback that automatically records tool calls."""
     
     def __init__(self, trace: AgentTrace):
         self.trace = trace
@@ -316,7 +316,7 @@ class TracingCallback(BaseCallbackHandler):
         self.current_tool_name: Optional[str] = None
     
     def on_llm_start(self, serialized, prompts, **kwargs):
-        """LLM 开始调用"""
+        """LLM call started."""
         self.step_count += 1
         self.current_step = AgentStep(
             step_number=self.step_count,
@@ -325,18 +325,18 @@ class TracingCallback(BaseCallbackHandler):
         )
     
     def on_llm_end(self, response: LLMResult, **kwargs):
-        """LLM 调用结束"""
+        """LLM call ended."""
         if self.current_step:
             if response.generations:
                 self.current_step.llm_output = response.generations[0][0].text
             self.trace.add_step(self.current_step)
     
     def on_tool_start(self, serialized, input_str, **kwargs):
-        """工具开始调用"""
+        """Tool call started."""
         self.tool_start_time = time.time()
         self.current_tool_name = serialized.get("name", "unknown")
         
-        # 添加工具调用记录（结果待填充）
+        # Add tool call record (result to be filled later)
         if self.current_step:
             self.current_step.tool_calls.append(ToolCall(
                 tool_name=self.current_tool_name,
@@ -345,15 +345,15 @@ class TracingCallback(BaseCallbackHandler):
             ))
     
     def on_tool_end(self, output, **kwargs):
-        """工具调用结束"""
+        """Tool call ended."""
         duration = (time.time() - self.tool_start_time) * 1000 if self.tool_start_time else None
         
         if self.current_step and self.current_step.tool_calls:
-            # 更新最后一个 tool call 的结果
+            # Update the result of the last tool call
             self.current_step.tool_calls[-1].result = str(output)[:500]
             self.current_step.tool_calls[-1].duration_ms = duration
     
     def on_tool_error(self, error, **kwargs):
-        """工具调用出错"""
+        """Tool call error."""
         if self.current_step and self.current_step.tool_calls:
             self.current_step.tool_calls[-1].error = str(error)

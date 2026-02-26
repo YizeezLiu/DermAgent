@@ -45,7 +45,7 @@ from benchmark.metrics import compute_captioning_metrics
 
 TASK3_DATASET_CONFIG = {
     "csv_path": PROJECT_ROOT / "data" / "skin_cap" / "skin_cap_meta_100.csv",
-    "image_dir": PROJECT_ROOT / "MAKE_Downstreams" / "skin_cap",
+    "image_dir": PROJECT_ROOT / "datasets" / "skin_cap" / "images",
     "filename_col": "filename",
     "caption_col": "caption_zh_polish_en",
 }

@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "type": "Vision Language Model (VLM)",
+        "function": "Generate detailed qualitative clinical description of the skin lesion",
+        "input": "Skin image, optional structured context from prior analysis steps",
+        "output": "Free-text clinical description of the lesion"
+    },
+    {
+        "id": 2,
+        "type": "zero-shot classification model",
+        "function": "Identify likely disease category using PanDerm for caption context",
+        "input": "Skin image",
+        "output": "Disease classification with confidence scores",
+        "command": "panderm_classify()"
+    },
+    {
+        "id": 3,
+        "type": "concept annotation model",
+        "function": "Extract structured dermoscopic concepts using MAKE for caption evidence",
+        "input": "Skin image",
+        "output": "Structured concept annotations with scores",
+        "command": "make_annotate()"
+    },
+    {
+        "id": 4,
+        "type": "retrieval model",
+        "function": "Retrieve similar cases with clinical descriptions for reference",
+        "input": "Skin image",
+        "output": "Similar case descriptions and diagnoses",
+        "command": "rag_retrieve()"
+    },
+    {
+        "id": 5,
+        "type": "coding module",
+        "function": "Aggregate all evidence into a structured summary for caption synthesis"
+    }
+]

@@ -25,31 +25,12 @@ if [[ -f "${PROJECT_ROOT}/.env" ]]; then
   set +a
 fi
 
-# ============== Override LangSmith Project ==============
-export LANGSMITH_PROJECT="DermAgent"
-
-# ============== Notification (optional) ==============
-TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
-TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
-
-send_telegram() {
-  local message="$1"
-  if [[ -z "${TELEGRAM_BOT_TOKEN}" || -z "${TELEGRAM_CHAT_ID}" ]]; then
-    return 0
-  fi
-  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-    --data-urlencode "text=${message}" \
-    --data-urlencode "parse_mode=HTML" > /dev/null 2>&1 || true
-}
-
 # ============== Configuration ==============
 MODEL_NAME="${MODEL_NAME:-gpt-4o}"
 DEVICE="${DEVICE:-cuda}"
 QWEN_MODEL_ID="${QWEN_MODEL_ID:-Qwen/Qwen3-VL-8B-Instruct}"
 MAX_SAMPLES="${MAX_SAMPLES:-0}"  # 0 means no limit
 USE_FLASH_ATTN="${USE_FLASH_ATTN:-false}"
-HOSTNAME="$(hostname)"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 
 # Use 2 GPUs (default: 0,1)
@@ -94,29 +75,27 @@ echo "--------------------------------------------------------------------------
 echo "[Pre-run checks]"
 command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || echo "nvidia-smi not found (ok if CPU-only)"
 free -h || true
-df -h /mnt/hdd/sdb/ || true
+df -h . || true
 
 # ============== Helper: wait for GPU availability ==============
 wait_for_gpu() {
   local gpu_id=0
   local threshold_pct=10
   local interval=300
-  
+
   echo "Monitoring GPU ${gpu_id} memory (target: < ${threshold_pct}% usage)..."
   while true; do
-    # Get used and total memory in MiB
     local mem_info=$(nvidia-smi --query-gpu=memory.used,memory.total --format=csv,noheader,nounits -i ${gpu_id})
     local used_mem=$(echo ${mem_info} | cut -d',' -f1 | xargs)
     local total_mem=$(echo ${mem_info} | cut -d',' -f2 | xargs)
-    
-    # Calculate percentage usage
+
     local usage_pct=$(( used_mem * 100 / total_mem ))
-    
+
     if [[ ${usage_pct} -lt ${threshold_pct} ]]; then
-      echo "✅ GPU ${gpu_id} memory usage is ${usage_pct}% (${used_mem}/${total_mem} MiB), starting experiment."
+      echo "GPU ${gpu_id} memory usage is ${usage_pct}% (${used_mem}/${total_mem} MiB), starting experiment."
       break
     fi
-    echo "⏳ GPU ${gpu_id} memory usage is ${usage_pct}% (${used_mem}/${total_mem} MiB), waiting ${interval}s..."
+    echo "GPU ${gpu_id} memory usage is ${usage_pct}% (${used_mem}/${total_mem} MiB), waiting ${interval}s..."
     sleep ${interval}
   done
 }
@@ -128,12 +107,6 @@ echo "[Starting Leave-One-Out Ablation]"
 wait_for_gpu
 
 start_time_total="$(date '+%Y-%m-%d %H:%M:%S')"
-send_telegram "🚀 <b>Task3 LOO Ablation 开始 (串行, ${CUDA_VISIBLE_DEVICES})</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🎮 GPUs: <code>${CUDA_VISIBLE_DEVICES}</code>
-🧪 实验: ${#LOO_ORDER[@]} 个 (leave-one-out)
-📁 输出: <code>${BASE_OUTPUT_DIR}</code>"
 
 SUCCESSFUL=()
 FAILED=()
@@ -177,21 +150,11 @@ for REMOVED in "${LOO_ORDER[@]}"; do
     echo "Executing: ${PYTHON_BIN} ${CMD_ARGS[*]}"
 
     if "${PYTHON_BIN}" "${CMD_ARGS[@]}" 2>&1 | tee "${LOG_FILE}"; then
-        echo "✅ w/o ${REMOVED} finished successfully."
+        echo "w/o ${REMOVED} finished successfully."
         SUCCESSFUL+=("${REMOVED}")
-
-        send_telegram "✅ <b>Task3 LOO [${CURRENT}/${TOTAL}] 完成: w/o ${REMOVED}</b>
-🖥 主机: ${HOSTNAME}
-🕐 开始: ${start_time_exp}
-🕑 结束: $(date '+%Y-%m-%d %H:%M:%S')"
     else
-        echo "❌ w/o ${REMOVED} failed."
+        echo "w/o ${REMOVED} failed."
         FAILED+=("${REMOVED}")
-
-        send_telegram "❌ <b>Task3 LOO [${CURRENT}/${TOTAL}] 失败: w/o ${REMOVED}</b>
-🖥 主机: ${HOSTNAME}
-🕐 开始: ${start_time_exp}
-🕑 失败: $(date '+%Y-%m-%d %H:%M:%S')"
     fi
 
     # GPU cleanup between runs
@@ -212,9 +175,9 @@ echo "Leave-One-Out Ablation Results"
 echo "================================================================================"
 for REMOVED in "${LOO_ORDER[@]}"; do
     if printf '%s\n' "${SUCCESSFUL[@]}" | grep -qx "${REMOVED}"; then
-        echo "  ✅ w/o ${REMOVED}"
+        echo "  OK   w/o ${REMOVED}"
     else
-        echo "  ❌ w/o ${REMOVED}"
+        echo "  FAIL w/o ${REMOVED}"
     fi
 done
 echo ""
@@ -222,23 +185,6 @@ echo "Outputs: ${BASE_OUTPUT_DIR}/loo_wo_*/"
 echo "  Successful: ${#SUCCESSFUL[@]}/${TOTAL}"
 echo "  Failed:     ${#FAILED[@]}/${TOTAL}"
 echo "================================================================================"
-
-if [[ ${#FAILED[@]} -eq 0 ]]; then
-  send_telegram "🎉 <b>Task3 LOO Ablation 全部完成!</b>
-🖥 主机: ${HOSTNAME}
-🕐 开始: ${start_time_total}
-🕑 结束: ${end_time_total}
-✅ 全部 ${TOTAL} 个实验成功
-📁 输出: <code>${BASE_OUTPUT_DIR}/loo_wo_*/</code>"
-else
-  send_telegram "⚠️ <b>Task3 LOO Ablation 完成 (有失败)</b>
-🖥 主机: ${HOSTNAME}
-🕐 开始: ${start_time_total}
-🕑 结束: ${end_time_total}
-✅ 成功: ${#SUCCESSFUL[@]}/${TOTAL}
-❌ 失败: ${#FAILED[@]}/${TOTAL} (${FAILED[*]})
-📁 输出: <code>${BASE_OUTPUT_DIR}/loo_wo_*/</code>"
-fi
 
 # Exit with failure if any experiment failed
 [[ ${#FAILED[@]} -eq 0 ]]

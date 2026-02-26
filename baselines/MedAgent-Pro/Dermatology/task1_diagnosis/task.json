@@ -1,0 +1,4 @@
+{
+    "input": "Dermoscopic or clinical skin image of the patient",
+    "disease": "Classify the skin lesion into one of: nevus, basal cell carcinoma, actinic keratosis, seborrheic keratosis, squamous cell carcinoma, melanoma"
+}

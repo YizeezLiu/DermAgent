@@ -12,11 +12,6 @@ from typing import Dict, Any, List
 
 DATASET_CONFIGS: Dict[str, Dict[str, Any]] = {
     # Diagnosis
-    "PAD": {
-        "task": "diagnosis",
-        "options": ["nevus", "basal cell carcinoma", "actinic keratosis", 
-                   "seborrheic keratosis", "squamous cell carcinoma", "melanoma"]
-    },
     "HAM10000": {
         "task": "diagnosis", 
         "options": ["melanocytic nevi", "melanoma", "basal cell carcinoma",
@@ -76,9 +71,6 @@ DATASET_CONFIGS: Dict[str, Dict[str, Any]] = {
     },
     # Captioning
     "skin_cap": {"task": "captioning"},
-    # VQA
-    "OmniMedVQA": {"task": "vqa"},
-    "Derm1M_VQA": {"task": "vqa"},
 }
 
 
@@ -87,7 +79,7 @@ def get_dataset_options(dataset: str) -> List[str]:
     Get the options/diseases list for a diagnosis dataset.
     
     Args:
-        dataset: Dataset name (e.g., 'SNU_500', 'PAD', 'HAM10000')
+        dataset: Dataset name (e.g., 'SNU_500', 'HAM10000')
         
     Returns:
         List of disease options, or empty list if not found

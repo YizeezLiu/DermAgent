@@ -50,9 +50,9 @@ TASK2_DATASET_CONFIGS = {
             "csv_path": PROJECT_ROOT / "data" / "derm7pt" / "meta_task2_sample_100.csv",
         },
         "500": {
-            "csv_path": PROJECT_ROOT / "MAKE_Downstreams" / "derm7pt" / "meta_task2_sample_500.csv",
+            "csv_path": PROJECT_ROOT / "data" / "derm7pt" / "meta_task2_sample_500.csv",
         },
-        "image_dir": PROJECT_ROOT / "MAKE_Downstreams" / "derm7pt" / "final_images",
+        "image_dir": PROJECT_ROOT / "datasets" / "derm7pt" / "final_images",
         "image_id_col": "ImageID",
         "concepts": DATASET_CONFIGS["derm7pt"]["concepts"],
     },
@@ -61,9 +61,9 @@ TASK2_DATASET_CONFIGS = {
             "csv_path": PROJECT_ROOT / "data" / "skincon" / "meta_task2_sample_100.csv",
         },
         "500": {
-            "csv_path": PROJECT_ROOT / "MAKE_Downstreams" / "skincon" / "meta_task2_sample_500.csv",
+            "csv_path": PROJECT_ROOT / "data" / "skincon" / "meta_task2_sample_500.csv",
         },
-        "image_dir": PROJECT_ROOT / "MAKE_Downstreams" / "skincon" / "final_images",
+        "image_dir": PROJECT_ROOT / "datasets" / "skincon" / "final_images",
         "image_id_col": "ImageID",
         "concepts": DATASET_CONFIGS["skincon"]["concepts"],
     },

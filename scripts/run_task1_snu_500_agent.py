@@ -80,7 +80,7 @@ SNU_CLASSES = [
 
 # Default paths
 DEFAULT_CSV_PATH = PROJECT_ROOT / "data" / "SNU" / "MAKE_SNU_500.csv"
-DEFAULT_DATASET_ROOT = PROJECT_ROOT / "MAKE_Downstreams" / "SNU"
+DEFAULT_DATASET_ROOT = PROJECT_ROOT / "datasets" / "SNU" / "images"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "results" / "agent" / "task1_diagnosis" / "SNU_500"
 
 # Default tool configuration

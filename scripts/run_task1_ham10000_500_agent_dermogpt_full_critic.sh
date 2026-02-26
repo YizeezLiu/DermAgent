@@ -18,10 +18,10 @@ set -eEuo pipefail
 #   MAX_SAMPLES=10 bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
 #
 #   # Resume a previous run
-#   RESUME=20260222_120000 bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
+#   RESUME=YYYYMMDD_HHMMSS bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
 #
 #   # Resume and retry errors
-#   RESUME=20260222_120000 RETRY_ERRORS=true bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
+#   RESUME=YYYYMMDD_HHMMSS RETRY_ERRORS=true bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
 #
 #   # Override critic settings
 #   MAX_CRITIC_RETRIES=3 CRITIC_LLM_SUMMARY=true bash scripts/run_task1_ham10000_500_agent_dermogpt_full_critic.sh
@@ -44,31 +44,11 @@ if [[ -f "${PROJECT_ROOT}/.env" ]]; then
   set +a
 fi
 
-# ============== Override LangSmith Project ==============
-export LANGSMITH_PROJECT="DermAgent"
-
-# ============== Notification (optional) ==============
-TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
-TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
-
-send_telegram() {
-  local message="$1"
-  if [[ -z "${TELEGRAM_BOT_TOKEN}" || -z "${TELEGRAM_CHAT_ID}" ]]; then
-    return 0
-  fi
-  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-    --data-urlencode "text=${message}" \
-    --data-urlencode "parse_mode=HTML" > /dev/null 2>&1 || true
-}
-
 # ============== Configuration ==============
 MODEL_NAME="${MODEL_NAME:-gpt-4o}"
 DEVICE="${DEVICE:-cuda}"
-# All 6 tools: panderm, make, dermogpt_vqa (DermoGPT-RL), rag, text_rag, ontology
 ENABLED_TOOLS="${ENABLED_TOOLS:-panderm,make,dermogpt_vqa,rag,text_rag,ontology}"
 MAX_SAMPLES="${MAX_SAMPLES:-0}"  # 0 means no limit
-HOSTNAME="$(hostname)"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 
 # Resume configuration
@@ -110,20 +90,12 @@ echo "--------------------------------------------------------------------------
 echo "[Pre-run checks]"
 command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || echo "nvidia-smi not found (ok if CPU-only)"
 free -h || true
-df -h /mnt/hdd/sdb/ || true
+df -h . || true
 
 echo "--------------------------------------------------------------------------------"
 echo "[Running]"
 
 start_time="$(date '+%Y-%m-%d %H:%M:%S')"
-send_telegram "🚀 <b>Task1 Agent (HAM10000_500) DermoGPT Full 6T+Critic 开始</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🧰 工具: <code>${ENABLED_TOOLS}</code>
-🔍 Critic: ON | Summary: ${CRITIC_LLM_SUMMARY} | Reinject: ${CRITIC_IMAGE_REINJECT} | MaxRetries: ${MAX_CRITIC_RETRIES}
-🧪 MAX_SAMPLES: <code>${MAX_SAMPLES}</code>
-🕐 开始: ${start_time}
-📁 输出: <code>${OUTPUT_DIR}</code>"
 
 mkdir -p "${OUTPUT_DIR}"
 
@@ -166,25 +138,10 @@ if [[ -n "${MAX_CRITIC_RETRIES}" && "${MAX_CRITIC_RETRIES}" != "2" ]]; then
 fi
 
 if "${PYTHON_BIN}" "${CMD_ARGS[@]}" "$@" 2>&1 | tee "${OUTPUT_DIR}/run_$(date +%Y%m%d_%H%M%S).log"; then
-  end_time="$(date '+%Y-%m-%d %H:%M:%S')"
-  send_telegram "✅ <b>Task1 Agent (HAM10000_500) DermoGPT Full 6T+Critic 完成</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🧰 工具: <code>${ENABLED_TOOLS}</code>
-🔍 Critic: ON | Reinject: ${CRITIC_IMAGE_REINJECT}
-🕐 开始: ${start_time}
-🕑 结束: ${end_time}
-📁 输出: <code>${OUTPUT_DIR}</code>"
+  echo "[SUCCESS] Benchmark completed."
 else
   exit_code=$?
-  end_time="$(date '+%Y-%m-%d %H:%M:%S')"
-  send_telegram "❌ <b>Task1 Agent (HAM10000_500) DermoGPT Full 6T+Critic 失败</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-⚠️ 退出码: ${exit_code}
-🕐 开始: ${start_time}
-🕑 失败时间: ${end_time}
-📁 输出: <code>${OUTPUT_DIR}</code>"
+  echo "[FAILED] Benchmark failed with exit code ${exit_code}."
   exit "${exit_code}"
 fi
 

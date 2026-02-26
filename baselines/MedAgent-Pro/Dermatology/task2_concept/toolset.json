@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "type": "Vision Language Model (VLM)",
+        "function": "Make qualitative assessment of specific dermoscopic concept presence in the image",
+        "input": "Dermoscopic skin image, optional concept annotation context from prior steps",
+        "output": "Qualitative judgement on whether a specific dermoscopic concept is present"
+    },
+    {
+        "id": 2,
+        "type": "concept annotation model",
+        "function": "Extract dermoscopic concepts with confidence scores using MAKE model",
+        "input": "Dermoscopic skin image",
+        "output": "JSON with all detected concepts and their confidence scores",
+        "command": "make_annotate()"
+    },
+    {
+        "id": 3,
+        "type": "retrieval model",
+        "function": "Retrieve similar cases to compare concept patterns",
+        "input": "Dermoscopic skin image",
+        "output": "JSON with similar cases and their concept annotations",
+        "command": "rag_retrieve()"
+    },
+    {
+        "id": 4,
+        "type": "coding module",
+        "function": "Write code to aggregate concept judgements into a structured output"
+    }
+]

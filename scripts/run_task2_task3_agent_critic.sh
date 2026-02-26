@@ -6,17 +6,13 @@ set -eEuo pipefail
 # Full 6 Tools + Critic + Image Reinjection
 # =============================================================================
 #
-# Pipeline settings UNIFIED with:
-#   scripts/run_task1_ham10000_500_agent_full_critic.sh
-#
 # Runs sequentially:
 #   [1/3] Task 2 Derm7pt  (100 samples) - Concept Annotation
 #   [2/3] Task 2 SkinCon  (100 samples) - Concept Annotation
 #   [3/3] Task 3 SkinCAP  (100 samples) - Clinical Image Captioning
 #
-# Configuration (same as HAM10000 full_critic):
+# Configuration:
 #   - 6 Tools: panderm, make, dermogpt_vqa, rag, text_rag, ontology
-#     (Task 2/3 prompts use dermogpt_vqa; Task 1 uses qwen_vqa)
 #   - Critic: Enabled (retry on low confidence / tool conflicts)
 #   - Image Reinjection: Enabled (re-inject image when critic triggers retry)
 #   - Max Critic Retries: 2
@@ -28,9 +24,9 @@ set -eEuo pipefail
 #   MAX_SAMPLES=10 bash scripts/run_task2_task3_agent_critic.sh
 #
 #   # Resume a specific sub-task
-#   RESUME_TASK2_DERM7PT=20260214_120000 bash scripts/run_task2_task3_agent_critic.sh
-#   RESUME_TASK2_SKINCON=20260214_130000 bash scripts/run_task2_task3_agent_critic.sh
-#   RESUME_TASK3_SKINCAP=20260214_140000 bash scripts/run_task2_task3_agent_critic.sh
+#   RESUME_TASK2_DERM7PT=YYYYMMDD_HHMMSS bash scripts/run_task2_task3_agent_critic.sh
+#   RESUME_TASK2_SKINCON=YYYYMMDD_HHMMSS bash scripts/run_task2_task3_agent_critic.sh
+#   RESUME_TASK3_SKINCAP=YYYYMMDD_HHMMSS bash scripts/run_task2_task3_agent_critic.sh
 #
 #   # Skip completed sub-tasks
 #   SKIP_TASK2_DERM7PT=true SKIP_TASK2_SKINCON=true bash scripts/run_task2_task3_agent_critic.sh
@@ -54,38 +50,17 @@ if [[ -f "${PROJECT_ROOT}/.env" ]]; then
   set +a
 fi
 
-# ============== Override LangSmith Project ==============
-export LANGSMITH_PROJECT="DermAgent"
-
-# ============== Notification (optional) ==============
-TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
-TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
-
-send_telegram() {
-  local message="$1"
-  if [[ -z "${TELEGRAM_BOT_TOKEN}" || -z "${TELEGRAM_CHAT_ID}" ]]; then
-    return 0
-  fi
-  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-    --data-urlencode "text=${message}" \
-    --data-urlencode "parse_mode=HTML" > /dev/null 2>&1 || true
-}
-
 # =============================================================================
-# Unified Pipeline Settings (aligned with run_task1_ham10000_500_agent_full_critic.sh)
+# Unified Pipeline Settings
 # =============================================================================
 MODEL_NAME="${MODEL_NAME:-gpt-4o}"
 DEVICE="${DEVICE:-cuda}"
-# All 6 tools: panderm, make, dermogpt_vqa, rag, text_rag, ontology
-# Note: Task 2/3 prompts use dermogpt_vqa; Task 1 (HAM10000) uses qwen_vqa
 ENABLED_TOOLS="${ENABLED_TOOLS:-panderm,make,dermogpt_vqa,rag,text_rag,ontology}"
 QWEN_MODEL_ID="${QWEN_MODEL_ID:-Qwen/Qwen3-VL-8B-Instruct}"
 MAX_SAMPLES="${MAX_SAMPLES:-0}"  # 0 means no limit
-HOSTNAME="$(hostname)"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 
-# Critic configuration (defaults match HAM10000 full_critic)
+# Critic configuration
 ENABLE_CRITIC="${ENABLE_CRITIC:-true}"
 CRITIC_LLM_SUMMARY="${CRITIC_LLM_SUMMARY:-false}"
 CRITIC_IMAGE_REINJECT="${CRITIC_IMAGE_REINJECT:-true}"
@@ -141,10 +116,10 @@ echo ""
 echo "[Pre-run checks]"
 command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || echo "nvidia-smi not found (ok if CPU-only)"
 free -h || true
-df -h /mnt/hdd/sdb/ || true
+df -h . || true
 
 # =============================================================================
-# Helper: build critic flags (same logic as HAM10000 full_critic)
+# Helper: build critic flags
 # =============================================================================
 build_critic_args() {
   local -n arr=$1
@@ -163,13 +138,6 @@ build_critic_args() {
 }
 
 overall_start="$(date '+%Y-%m-%d %H:%M:%S')"
-send_telegram "🚀 <b>Task2+3 Agent Full+Critic 开始</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🧰 工具: <code>${ENABLED_TOOLS}</code>
-🔍 Critic: ON | Summary: ${CRITIC_LLM_SUMMARY} | Reinject: ${CRITIC_IMAGE_REINJECT} | MaxRetries: ${MAX_CRITIC_RETRIES}
-🧪 MAX_SAMPLES: <code>${MAX_SAMPLES}</code>
-📁 输出: <code>${OUTPUT_BASE}</code>"
 
 FAILED_TASKS=()
 
@@ -184,9 +152,6 @@ if [[ "${SKIP_TASK2_DERM7PT}" != "true" ]]; then
 
   mkdir -p "${OUTPUT_TASK2_DERM7PT}"
   start_time="$(date '+%Y-%m-%d %H:%M:%S')"
-
-  send_telegram "▶️ <b>[1/3] Task2 Derm7pt_100 Critic 开始</b>
-🕐 ${start_time}"
 
   CMD_ARGS=(
     "${PROJECT_ROOT}/scripts/run_task2_concept_agent.py"
@@ -214,9 +179,9 @@ if [[ "${SKIP_TASK2_DERM7PT}" != "true" ]]; then
   echo "Executing: ${PYTHON_BIN} ${CMD_ARGS[*]}"
 
   if "${PYTHON_BIN}" "${CMD_ARGS[@]}" "$@" 2>&1 | tee "${OUTPUT_TASK2_DERM7PT}/run_$(date +%Y%m%d_%H%M%S).log"; then
-    send_telegram "✅ <b>[1/3] Task2 Derm7pt_100 Critic 完成</b>"
+    echo "[1/3] Task2 Derm7pt_100 completed."
   else
-    send_telegram "❌ <b>[1/3] Task2 Derm7pt_100 Critic 失败</b>"
+    echo "[1/3] Task2 Derm7pt_100 FAILED."
     FAILED_TASKS+=("Task2_Derm7pt")
   fi
 else
@@ -235,9 +200,6 @@ if [[ "${SKIP_TASK2_SKINCON}" != "true" ]]; then
 
   mkdir -p "${OUTPUT_TASK2_SKINCON}"
   start_time="$(date '+%Y-%m-%d %H:%M:%S')"
-
-  send_telegram "▶️ <b>[2/3] Task2 SkinCon_100 Critic 开始</b>
-🕐 ${start_time}"
 
   CMD_ARGS=(
     "${PROJECT_ROOT}/scripts/run_task2_concept_agent.py"
@@ -265,9 +227,9 @@ if [[ "${SKIP_TASK2_SKINCON}" != "true" ]]; then
   echo "Executing: ${PYTHON_BIN} ${CMD_ARGS[*]}"
 
   if "${PYTHON_BIN}" "${CMD_ARGS[@]}" "$@" 2>&1 | tee "${OUTPUT_TASK2_SKINCON}/run_$(date +%Y%m%d_%H%M%S).log"; then
-    send_telegram "✅ <b>[2/3] Task2 SkinCon_100 Critic 完成</b>"
+    echo "[2/3] Task2 SkinCon_100 completed."
   else
-    send_telegram "❌ <b>[2/3] Task2 SkinCon_100 Critic 失败</b>"
+    echo "[2/3] Task2 SkinCon_100 FAILED."
     FAILED_TASKS+=("Task2_SkinCon")
   fi
 else
@@ -286,9 +248,6 @@ if [[ "${SKIP_TASK3_SKINCAP}" != "true" ]]; then
 
   mkdir -p "${OUTPUT_TASK3_SKINCAP}"
   start_time="$(date '+%Y-%m-%d %H:%M:%S')"
-
-  send_telegram "▶️ <b>[3/3] Task3 SkinCAP_100 Critic 开始</b>
-🕐 ${start_time}"
 
   CMD_ARGS=(
     "${PROJECT_ROOT}/scripts/run_task3_captioning_agent.py"
@@ -314,9 +273,9 @@ if [[ "${SKIP_TASK3_SKINCAP}" != "true" ]]; then
   echo "Executing: ${PYTHON_BIN} ${CMD_ARGS[*]}"
 
   if "${PYTHON_BIN}" "${CMD_ARGS[@]}" "$@" 2>&1 | tee "${OUTPUT_TASK3_SKINCAP}/run_$(date +%Y%m%d_%H%M%S).log"; then
-    send_telegram "✅ <b>[3/3] Task3 SkinCAP_100 Critic 完成</b>"
+    echo "[3/3] Task3 SkinCAP_100 completed."
   else
-    send_telegram "❌ <b>[3/3] Task3 SkinCAP_100 Critic 失败</b>"
+    echo "[3/3] Task3 SkinCAP_100 FAILED."
     FAILED_TASKS+=("Task3_SkinCAP")
   fi
 else
@@ -339,22 +298,8 @@ echo "Output:  ${OUTPUT_BASE}"
 
 if [[ ${#FAILED_TASKS[@]} -eq 0 ]]; then
   echo "Status:  ALL 3 sub-tasks completed successfully"
-  send_telegram "🎉 <b>Task2+3 Agent Full+Critic 全部完成</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🧰 工具: <code>${ENABLED_TOOLS}</code>
-🔍 Critic: ON | Reinject: ${CRITIC_IMAGE_REINJECT}
-🕐 开始: ${overall_start}
-🕑 结束: ${overall_end}
-📁 输出: <code>${OUTPUT_BASE}</code>"
 else
   echo "Status:  ${#FAILED_TASKS[@]} sub-task(s) FAILED: ${FAILED_TASKS[*]}"
-  send_telegram "⚠️ <b>Task2+3 Agent Full+Critic 部分失败</b>
-🖥 主机: ${HOSTNAME}
-❌ 失败: ${FAILED_TASKS[*]}
-🕐 开始: ${overall_start}
-🕑 结束: ${overall_end}
-📁 输出: <code>${OUTPUT_BASE}</code>"
 fi
 
 echo ""

@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "type": "Vision Language Model (VLM)",
+        "function": "Make qualitative analysis of dermatological features from the skin image",
+        "input": "Dermoscopic or clinical skin image, optional text context from prior steps",
+        "output": "Qualitative description and clinical judgement of skin lesion features"
+    },
+    {
+        "id": 2,
+        "type": "zero-shot classification model",
+        "function": "Classify skin disease using DermLIP/PanDerm CLIP model with zero-shot learning",
+        "input": "Dermoscopic or clinical skin image",
+        "output": "JSON with ranked disease predictions and confidence scores for 6 candidate diagnoses",
+        "command": "panderm_classify()"
+    },
+    {
+        "id": 3,
+        "type": "concept annotation model",
+        "function": "Extract dermoscopic concepts (pigment network, asymmetry, border, colors, structures) using MAKE model",
+        "input": "Dermoscopic or clinical skin image",
+        "output": "JSON with detected dermoscopic concepts and their confidence scores",
+        "command": "make_annotate()"
+    },
+    {
+        "id": 4,
+        "type": "retrieval model",
+        "function": "Retrieve similar dermatology cases from knowledge base using image similarity",
+        "input": "Dermoscopic or clinical skin image",
+        "output": "JSON with top-k similar cases including their diagnoses and clinical descriptions",
+        "command": "rag_retrieve()"
+    },
+    {
+        "id": 5,
+        "type": "coding module",
+        "function": "Write simple code for aggregating diagnostic indicators or computing metrics"
+    }
+]

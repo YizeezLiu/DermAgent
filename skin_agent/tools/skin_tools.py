@@ -695,14 +695,14 @@ class Qwen3VLTool(BaseSkinTool):
     )
     args_schema: Type[BaseModel] = ImageQueryInput
     
-    # 默认使用本地下载的模型
+    # Default to locally downloaded model
     model_id: str = "Qwen/Qwen3-VL-8B-Instruct"
     model: Any = None
     processor: Any = None
     _load_failed: bool = False
     
     # Acceleration options
-    use_flash_attn: bool = False   # Flash Attention 2 (需要安装 flash-attn)
+    use_flash_attn: bool = False   # Flash Attention 2 (requires flash-attn)
     
     # Generation parameters
     max_new_tokens: int = 512
@@ -721,9 +721,9 @@ class Qwen3VLTool(BaseSkinTool):
         self.use_flash_attn = use_flash_attn
     
     def _load_model(self) -> None:
-        """Load Qwen VL model (参考 benchmark/models/qwen3vl.py)."""
+        """Load Qwen VL model (cf. benchmark/models/qwen3vl.py)."""
         try:
-            # 兼容不同版本的 transformers
+            # Compatible with different transformers versions
             try:
                 from transformers import AutoModelForImageTextToText
             except ImportError:
@@ -734,7 +734,7 @@ class Qwen3VLTool(BaseSkinTool):
             print(f"[Qwen3VLTool] Loading model: {self.model_id}")
             print(f"[Qwen3VLTool] Flash Attention: {self.use_flash_attn}")
             
-            # 加载模型 - 使用 bfloat16，与 benchmark 版本一致
+            # Load model - use bfloat16, consistent with benchmark version
             if self.use_flash_attn:
                 print("[Qwen3VLTool] Using Flash Attention 2")
                 self.model = AutoModelForImageTextToText.from_pretrained(
@@ -750,7 +750,7 @@ class Qwen3VLTool(BaseSkinTool):
                     device_map="auto",
                 )
             
-            # 加载 processor
+            # Load processor
             self.processor = AutoProcessor.from_pretrained(self.model_id)
             
             print("[Qwen3VLTool] Model loaded successfully!")
@@ -804,7 +804,7 @@ class Qwen3VLTool(BaseSkinTool):
             else:
                 enhanced_query = query
             
-            # Build message (与 benchmark/models/qwen3vl.py 保持一致)
+            # Build message (consistent with benchmark/models/qwen3vl.py)
             messages = [{
                 "role": "user",
                 "content": [
@@ -1602,16 +1602,15 @@ class RAGTool(BaseSkinTool):
 # Text RAG Tool - Pure Text Retrieval from Dermatology Literature
 # =============================================================================
 
-# RAG 医疗/皮肤科领域专用停用词表
 # Stopwords for medical/dermatology RAG queries to reduce noise
 TEXT_RAG_STOPWORDS = {
-    # --- 查询构造词 (Query Artifacts) ---
+    # --- Query Artifacts ---
     "what", "is", "the", "of", "in", "this", "image", "picture", "photo", 
     "depicted", "shown", "demonstrated", "observed", "present", "abnormality",
     "anomaly", "lesion", "growth", "case", "patient", "regarding", "concerning",
     "for", "to", "and", "or", "between", "vs", "versus",
     
-    # --- 导致匹配到无关章节的通用医学词 (Medical Generics) ---
+    # --- Medical Generics (cause matching to irrelevant sections) ---
     "disease", "condition", "disorder", "syndrome", "issue", "problem",
     "treatment", "treatments", "therapy", "management", "cure",
     "diagnosis", "diagnostic", "diagnose", "diagnosed", "criteria",
@@ -1621,7 +1620,7 @@ TEXT_RAG_STOPWORDS = {
     "overview", "introduction", "definition", "summary",
     "score", "index", "scale", "grading", "grade", "stage", "staging",
     
-    # --- 比较与判断词 ---
+    # --- Comparison and Judgment Terms ---
     "differentiating", "differentiate", "distinguish", "difference", "differences",
     "indicate", "indicative", "suggest", "suggestive",
     "associated", "related", "linked"

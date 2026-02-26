@@ -1,0 +1,4 @@
+{
+    "input": "Dermoscopic image of the patient",
+    "disease": "Annotate all dermoscopic concepts present in the image. Concepts include: pigment network, blue-white veil, vascular structures, dots and globules, streaks, regression structures, asymmetry, border irregularity"
+}

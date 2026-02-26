@@ -1,0 +1,181 @@
+# DermoInstruct Prompt Templates Collection
+# Source: Appendix C of arXiv:2601.01868v1 (DermoGPT paper)
+# Version: Extracted and structured 2026-02
+# Purpose: Templates used for generating morphology descriptions, structured attributes, CoT reasoning, and diagnosis VQA
+
+prompt_templates:
+
+  morphology_json:
+    clinical_images_skincon:
+      name: "Clinical Images - SkinCon (48 concepts)"
+      description: "Generate detailed description + structured SkinCon features + other features in JSON"
+      system_prompt: |
+        You are an expert in dermatology. Your task is to perform a detailed visual analysis of a provided skin lesion image (clinical or dermoscopic). You will be given an image of a skin lesion and a predefined list of 48 standardized clinical concepts from the SkinCon dataset. Your task is to analyze the image, describe it clinically, and then map the observed features to the provided SkinCon concepts. Any features you observe that are not on the list must be categorized separately. Your output must be a single, clean JSON object and nothing else.
+      user_prompt: |
+        Analyze the provided skin lesion image using the established SkinCon vocabulary. First, perform a detailed, step-by-step visual assessment. Second, generate a single, valid JSON object as your final and ONLY output. Do not include any text, explanations, or markdown formatting outside of the JSON object.
+
+        ### SkinCon Morphological Concepts List
+        Here are the 48 standardized concepts you MUST use for classification:
+        1. Abscess
+        2. Acuminate
+        3. Atrophy
+        4. Black
+        5. Blue
+        6. Brown(Hyperpigmentation)
+        7. Bulla
+        8. Burrow
+        9. Comedo
+        10. Crust
+        11. Cyst
+        12. Dome-shaped
+        13. Erosion
+        14. Erythema
+        15. Excoriation
+        16. Exophytic/Fungating
+        17. Exudate
+        18. Fissure
+        19. Flat topped
+        20. Friable
+        21. Gray
+        22. Induration
+        23. Lichenification
+        24. Macule
+        25. Nodule
+        26. Papule
+        27. Patch
+        28. Pedunculated
+        29. Pigmented
+        30. Plaque
+        31. Poikiloderma
+        32. Purple
+        33. Purpura/Petechiae
+        34. Pustule
+        35. Salmon
+        36. Scale
+        37. Scar
+        38. Sclerosis
+        39. Telangiectasia
+        40. Translucent
+        41. Ulcer
+        42. Umbilicated
+        43. Vesicle
+        44. Warty/Papillomatous
+        45. Wheal
+        46. White(Hypopigmentation)
+        47. Xerosis
+        48. Yellow
+
+        ### Required JSON Output Structure
+        The JSON object MUST contain exactly three keys:
+        1. detailed_description: (String) A comprehensive clinical narrative of the lesion's morphology, including primary lesion type, color, shape, border, surface, and texture.
+        2. morphological_features_skincon: (Array of Strings) A list of all observed features that EXACTLY MATCH one or more terms from the 48 SkinCon concepts provided above.
+        3. morphological_features_others: (Array of Strings) A list of important observed features that are NOT found in the SkinCon list. If all features are covered by the SkinCon list, this array should be empty [].
+
+        ### Examples for Guidance
+        # (example omitted for brevity - see original Appendix C.2.1)
+
+        ### YOUR TASK
+        Now, for the image I have provided, please perform the same analysis and generate the JSON output. Remember, the JSON object is the only thing you should return.
+
+    dermoscopic_images_derm7pt:
+      name: "Dermoscopic Images - Derm7pt (7-point checklist)"
+      description: "Generate detailed description + structured Derm7pt labels + other features in JSON"
+      system_prompt: |
+        You are an expert in dermatology. Your task is to perform a detailed visual analysis of a provided dermoscopic image. You will analyze the image and classify its features according to the 7-point checklist, assigning the single most fitting morphological label to each of the seven criteria. Your output must be a single, clean JSON object and nothing else.
+      user_prompt: |
+        Analyze the provided skin lesion image using the established Derm7pt vocabulary. First, perform a detailed, step-by-step visual assessment. Second, for each of the 7 criteria, select the single most appropriate label from the lists provided below. Finally, generate a single, valid JSON object as your final and ONLY output. Do not include any text, explanations, or markdown formatting outside of the JSON object.
+
+        ### Derm7pt Morphological Concepts and Labels
+        You MUST classify the lesion by selecting exactly one label for each of the 7 criteria:
+
+        1. pigment_network: ["absent", "typical", "atypical"]
+        2. blue_whitish_veil: ["absent", "present"]
+        3. vascular_structures: ["absent", "arborizing", "comma", "hairpin", "within regression", "wreath", "dotted", "linear irregular"]
+        4. pigmentation: ["absent", "diffuse regular", "localized regular", "diffuse irregular", "localized irregular"]
+        5. streaks: ["absent", "regular", "irregular"]
+        6. dots_and_globules: ["absent", "regular", "irregular"]
+        7. regression_structures: ["absent", "blue areas", "white areas", "combinations"]
+
+        ### Required JSON Output Structure
+        The JSON object MUST contain exactly three keys:
+        1. detailed_description: (String) A comprehensive clinical narrative of the lesion's morphology, including primary lesion type, color, shape, border, surface, and texture, justifying your label choices.
+        2. morphological_features_Derm7pt: (Object) An object where each key is one of the 7 Derm7pt criteria and its value is a single (String) label selected from the lists above.
+        3. morphological_features_others: (Array of Strings) A list of important observed features that are NOT part of the 7-point checklist classification (e.g., symmetry, specific colors). If none, this array should be empty [].
+
+        ### Examples for Guidance
+        # (example omitted for brevity - see original Appendix C.2.2)
+
+        ### YOUR TASK
+        Now, for the image I have provided, please perform the same analysis and generate the JSON output. Remember, the JSON object is the only thing you should return.
+
+  chain_of_thought_reasoning:
+    name: "Clinically Grounded Chain-of-Thought Reasoning"
+    description: "Generate <reasoning> block explaining morphology → diagnosis, followed by <final_diagnosis>"
+    system_prompt: |
+      You are an expert dermatologist AI, acting as a clinical consultant. Your primary task is to analyze a skin lesion image and generate a concise clinical reasoning narrative. You will be provided with potential clinical concepts (which may not be entirely accurate) and a confirmed diagnosis. You must critically evaluate the visual evidence in the image to explain how it supports the diagnosis, adhering to a strict XML format for your output.
+    user_prompt_template: |
+      Analyze the provided image and its context. Your entire output must be a structured response containing a reasoning block (<reasoning>) and a final diagnosis block (<final_diagnosis>).
+
+      ### Input Context
+      * **Image:**
+      * **Potential Clinical Concepts:** {clinical_concepts}
+      * **Confirmed Diagnoses:** {diagnoses}
+
+      ### Your Task
+      Your response MUST follow these three rules precisely:
+      1. **First,** provide a step-by-step clinical rationale explaining how the visual evidence in the image leads to the confirmed diagnosis. Your explanation should be from the perspective of an expert explaining the case to a colleague. Ground your reasoning in the visual features of the lesion (e.g., shape, color, border, texture, specific structures). Use the 'Potential Clinical Concepts' as a guide, but your primary justification must come from the image itself. Enclose this entire process within <reasoning> and </reasoning> tags.
+      2. **Second,** provide the most specific diagnosis from the 'Confirmed Diagnoses' list inside <final_diagnosis> and </final_diagnosis> tags.
+      3. **Third,** ensure there is absolutely NO extra text, explanation, or markdown formatting outside of these two required XML tags.
+
+      ### Example for Guidance
+      # (example omitted for brevity - see original Appendix C.3)
+
+      ### YOUR TASK
+      Now, for the image, concepts, and diagnoses I have provided, generate the response in the required format.
+
+  diagnosis_vqa:
+    flat_4way_mcqa:
+      name: "4-way Diagnosis MCQA Prompts"
+      description: "Single-turn flat diagnosis multiple choice (4 options)"
+      prompts:
+        - "Observe this skin image. Which of the following diagnoses is the most likely?"
+        - "Based on the skin lesion shown in this image, please select the most accurate diagnosis from the options below."
+        - "Which of the following diagnoses best matches the skin condition shown in this image?"
+        - "Considering the clinical presentation of the skin lesion in the image, which of the following is the most likely diagnosis?"
+
+    hierarchical_diagnosis:
+      top_level:
+        name: "Top-level category selection"
+        prompts:
+          - "Based on the clinical image, identify the most fitting major dermatological category from the following list: {options_list}."
+          - "Observe the skin lesion. Which of these high-level classifications best describes it? Here are the possibilities: {options_list}."
+          - "Please provide a broad categorization for the skin condition shown. Your answer should be one of the following: {options_list}."
+
+      sub_level:
+        name: "Sub-category refinement"
+        prompts:
+          - "Correct, the condition is a form of '{parent_category}'. Now, specify the sub-category from this list: {options_list}."
+          - "Proceeding from '{parent_category}', which of the following groups does this lesion belong to? {options_list}."
+          - "Understood. Let's refine the diagnosis within '{parent_category}'. Please choose the most accurate description from the following: {options_list}."
+
+      final_level:
+        name: "Final leaf diagnosis"
+        prompts:
+          - "We've classified this under '{parent_category}'. Now, provide the definitive diagnosis from the choices available: {options_list}."
+          - "Excellent. To finalize, please state the specific diagnosis for '{parent_category}', which should be one of the following: {options_list}."
+          - "Perfect. Based on our hierarchical classification ending with '{parent_category}', please identify the definitive diagnosis from this list: {options_list}."
+
+      declarative:
+        name: "Declarative final diagnosis statements"
+        prompts:
+          - "Following the diagnostic path to '{parent_category}', the evidence points to a single definitive diagnosis, which is {final_diagnosis}."
+          - "Correct. The reasoning has led us to '{parent_category}', which contains only one specific condition. Therefore, the diagnosis must be {final_diagnosis}."
+          - "Excellent. Since '{parent_category}' is the most specific category and it corresponds to a single diagnosis, we can conclude the condition is {final_diagnosis}."
+
+      human_correction:
+        name: "Correction prompts when path deviates"
+        prompts:
+          - "That's not quite right. While '{wrong_choice}' is a possibility, the visual evidence points more strongly to '{correct_choice}'. Let's proceed with the correct category."
+          - "Actually, that's incorrect. A closer look reveals features more consistent with '{correct_choice}'. Please correct the path."
+          - "Incorrect. The diagnosis should be '{correct_choice}', not '{wrong_choice}'. Let's continue from the right category."
+          - "I disagree. '{correct_choice}' is the more accurate classification here. Let's use that one instead."

@@ -19,10 +19,10 @@ set -eEuo pipefail
 #   MAX_SAMPLES=100 bash scripts/run_task1_snu_500_critic.sh
 #
 #   # Resume a previous run
-#   RESUME=20260215_xxxxxx bash scripts/run_task1_snu_500_critic.sh
+#   RESUME=YYYYMMDD_HHMMSS bash scripts/run_task1_snu_500_critic.sh
 #
 #   # Only retry errors from a previous run
-#   RESUME=20260215_xxxxxx RETRY_ERRORS=true bash scripts/run_task1_snu_500_critic.sh
+#   RESUME=YYYYMMDD_HHMMSS RETRY_ERRORS=true bash scripts/run_task1_snu_500_critic.sh
 #
 # After the run, analyze narrowed re-diagnosis:
 #   LOG=results/agent_critic/task1_diagnosis/SNU_500/run_*.log
@@ -42,23 +42,6 @@ if [[ -f "${PROJECT_ROOT}/.env" ]]; then
   set +a
 fi
 
-export LANGSMITH_PROJECT="DermAgent"
-
-# ============== Notification (optional) ==============
-TELEGRAM_BOT_TOKEN="${TELEGRAM_BOT_TOKEN:-}"
-TELEGRAM_CHAT_ID="${TELEGRAM_CHAT_ID:-}"
-
-send_telegram() {
-  local message="$1"
-  if [[ -z "${TELEGRAM_BOT_TOKEN}" || -z "${TELEGRAM_CHAT_ID}" ]]; then
-    return 0
-  fi
-  curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-    --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-    --data-urlencode "text=${message}" \
-    --data-urlencode "parse_mode=HTML" > /dev/null 2>&1 || true
-}
-
 # ============== GPU Monitor Configuration ==============
 MONITOR_GPU="${MONITOR_GPU:-0}"           # GPU to monitor for availability
 THRESHOLD="${THRESHOLD:-10}"               # Memory % threshold to start
@@ -71,7 +54,6 @@ DEVICE="${DEVICE:-cuda}"
 QWEN_MODEL_ID="${QWEN_MODEL_ID:-Qwen/Qwen3-VL-8B-Instruct}"
 MAX_SAMPLES="${MAX_SAMPLES:-0}"            # 0 = all 500 samples
 USE_FLASH_ATTN="${USE_FLASH_ATTN:-false}"
-HOSTNAME="$(hostname)"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 
 # Resume
@@ -149,12 +131,6 @@ if [[ "${SKIP_WAIT}" != "true" ]]; then
     echo "[GPU Monitor] Checking every ${CHECK_INTERVAL}s. Set SKIP_WAIT=true to skip."
     echo ""
 
-    send_telegram "⏳ <b>Task1 SNU_500 Critic 等待 GPU</b>
-🖥 主机: ${HOSTNAME}
-🎮 监控 GPU: ${MONITOR_GPU}
-📊 阈值: ${THRESHOLD}%
-⏱ 间隔: ${CHECK_INTERVAL}s"
-
     while true; do
         mem_percent=$(get_gpu_memory_percent "${MONITOR_GPU}")
         timestamp=$(date '+%Y-%m-%d %H:%M:%S')
@@ -163,7 +139,6 @@ if [[ "${SKIP_WAIT}" != "true" ]]; then
         if [[ "${mem_percent}" -lt "${THRESHOLD}" ]]; then
             echo ""
             echo "[${timestamp}] GPU ${MONITOR_GPU} memory < ${THRESHOLD}%! Starting benchmark..."
-            send_telegram "🟢 <b>GPU ${MONITOR_GPU} 空闲 (${mem_percent}%)，开始运行</b>"
             break
         fi
         sleep "${CHECK_INTERVAL}"
@@ -178,7 +153,7 @@ echo ""
 echo "[Pre-run checks]"
 command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi || echo "nvidia-smi not found"
 free -h || true
-df -h /mnt/hdd/sdb/ || true
+df -h . || true
 
 # ============== Run Benchmark ==============
 echo ""
@@ -189,15 +164,6 @@ echo "==========================================================================
 start_time="$(date '+%Y-%m-%d %H:%M:%S')"
 RUN_LOG="${OUTPUT_DIR}/run_$(date +%Y%m%d_%H%M%S).log"
 mkdir -p "${OUTPUT_DIR}"
-
-send_telegram "🔬 <b>Task1 SNU_500 Critic 开始</b>
-🖥 主机: ${HOSTNAME}
-🤖 模型: <code>${MODEL_NAME}</code>
-🛠 工具: <code>${ENABLED_TOOLS}</code>
-🎮 GPUs: <code>${CUDA_VISIBLE_DEVICES}</code>
-🔍 Critic: ON | MaxRetries: ${MAX_CRITIC_RETRIES}
-📊 Samples: ${MAX_SAMPLES:-all 500}
-📁 输出: <code>${OUTPUT_DIR}</code>"
 
 # Build command
 CMD_ARGS=(
@@ -274,21 +240,9 @@ if "${PYTHON_BIN}" "${CMD_ARGS[@]}" 2>&1 | tee "${RUN_LOG}"; then
     grep '\[NarrowedDx\]' "${RUN_LOG}" 2>/dev/null | head -50 || echo "(none)"
     echo ""
 
-    send_telegram "✅ <b>Task1 SNU_500 Critic 完成</b>
-🖥 主机: ${HOSTNAME}
-🕐 开始: ${start_time}
-🕑 结束: ${end_time}
-📊 Narrowed Re-diagnosis:
-  Shortlists: ${n_shortlist}
-  Blocked: ${n_blocked}
-  Injections: ${n_inject}
-  Chatbot: ${n_chatbot}
-📁 日志: <code>${RUN_LOG}</code>"
+    echo "[SUCCESS] Benchmark completed."
 else
-    echo "Critic Benchmark failed."
-    send_telegram "❌ <b>Task1 SNU_500 Critic 失败</b>
-🖥 主机: ${HOSTNAME}
-📁 日志: <code>${RUN_LOG}</code>"
+    echo "[FAILED] Critic Benchmark failed."
     exit 1
 fi
 

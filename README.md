@@ -1,8 +1,8 @@
-# DermAgent
+# DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making
 
-A collaborative multi-tool AI agent for comprehensive dermatological image analysis, built on LangChain/LangGraph.
+A self-reflective agentic system for dermatological image analysis, built on LangChain/LangGraph.
 
-DermAgent orchestrates seven specialist tools (PanDerm, MAKE, DermoGPT, Qwen3-VL, Image RAG, Text RAG, Ontology) via a **Plan-Execute-Reflect** loop, using GPT-4o as the reasoning backbone. A deterministic **Critic** module evaluates evidence chains and triggers self-correction when deficiencies are detected.
+DermAgent orchestrates seven specialist vision and language tools (PanDerm, MAKE, DermoGPT, Qwen3-VL, Case RAG, Guideline RAG, Ontology) within a **Plan-Execute-Reflect** framework, using GPT-4o as the reasoning backbone. A deterministic **Critic** module performs post-hoc auditing via confidence, coverage, and conflict gates to trigger targeted self-correction, delivering stepwise, traceable diagnostic reasoning.
 
 ## Architecture
 
@@ -226,7 +226,7 @@ The full agent result (w/ Critic, ROUGE-L: 0.1948) is produced by the Task 3 por
 
 ```bibtex
 @inproceedings{dermagent2026,
-  title={DermAgent: A Collaborative Agent for Comprehensive Dermatological Image Analysis},
+  title={DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making},
   author={Anonymous},
   booktitle={MICCAI},
   year={2026}

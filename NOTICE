@@ -1,0 +1,57 @@
+DermAgent
+=========
+
+This product includes software developed by third parties. The following
+third-party components are redistributed in adapted form for the purpose of
+scientific reproducibility of the baselines reported in the DermAgent paper.
+
+----------------------------------------------------------------------
+1. MDAgents
+----------------------------------------------------------------------
+Location in this repository:  baselines/MDAgents/
+Upstream repository:          https://github.com/mitmedialab/MDAgents
+Reference:                    Kim et al., "MDAgents: An Adaptive Collaboration
+                              of LLMs for Medical Decision-Making."
+                              NeurIPS 2024 (Oral).
+Upstream license:             No LICENSE file present upstream.
+Use here:                     Under attribution only; not under any
+                              open-source license grant.
+Details:                      See baselines/MDAgents/ATTRIBUTION.md
+
+----------------------------------------------------------------------
+2. MedAgent-Pro
+----------------------------------------------------------------------
+Location in this repository:  baselines/MedAgent-Pro/
+Upstream repository:          https://github.com/jinlab-imvr/MedAgent-Pro
+Reference:                    Wang et al., "MedAgent-Pro: Towards Evidence-
+                              Based Multi-Modal Medical Diagnosis via
+                              Reasoning Agentic Workflow." ICLR 2026.
+Upstream license:             No LICENSE file present upstream.
+Use here:                     Under attribution only; not under any
+                              open-source license grant.
+Details:                      See baselines/MedAgent-Pro/ATTRIBUTION.md
+
+----------------------------------------------------------------------
+External dependencies referenced (not redistributed)
+----------------------------------------------------------------------
+The following components are referenced by the agent at runtime and must be
+obtained directly from their authors. They are NOT redistributed in this
+repository. See README.md for instructions.
+
+  - Derm1M  (PanDerm encoder + Image RAG)
+            https://github.com/SiyuanYan1/Derm1M
+  - MAKE    (concept annotation encoder)
+            https://github.com/SiyuanYan1/MAKE
+  - DermoGPT (dermatology VQA model)
+            https://github.com/mendicant04/DermoGPT
+  - Qwen3-VL, Qwen3-Embedding, Qwen3-Reranker
+            https://huggingface.co/Qwen
+  - Qdrant  (vector database)
+            https://qdrant.tech
+
+----------------------------------------------------------------------
+Removal / re-licensing requests
+----------------------------------------------------------------------
+If you are an author or rights-holder of any redistributed component and wish
+to have it removed or re-licensed, please open an issue at the DermAgent
+repository and we will respond promptly.

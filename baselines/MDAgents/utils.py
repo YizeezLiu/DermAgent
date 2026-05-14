@@ -1,3 +1,12 @@
+# =============================================================================
+# Adapted from MDAgents (https://github.com/mitmedialab/MDAgents)
+# Original work: Kim et al., "MDAgents: An Adaptive Collaboration of LLMs
+#   for Medical Decision-Making", NeurIPS 2024 (Oral).
+# Upstream license: no license file. Used with attribution; see
+#   baselines/MDAgents/ATTRIBUTION.md for details.
+# Modifications by the DermAgent authors for dermatology benchmarks.
+# =============================================================================
+
 import os
 import json
 import random

@@ -13,5 +13,9 @@
 !run_task2_task3_agent_critic.sh
 !run_task3_loo_ablation.sh
 
+# RAG vector database build scripts
+!build_qdrant_db.py
+!build_qdrant_rag.py
+
 # Keep this .gitignore
 !.gitignore

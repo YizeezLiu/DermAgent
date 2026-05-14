@@ -1,5 +1,8 @@
 # DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+
 A self-reflective agentic system for dermatological image analysis, built on LangChain/LangGraph.
 
 DermAgent orchestrates seven specialist vision and language tools (PanDerm, MAKE, DermoGPT, Qwen3-VL, Case RAG, Guideline RAG, Ontology) within a **Plan-Execute-Reflect** framework, using GPT-4o as the reasoning backbone. A deterministic **Critic** module performs post-hoc auditing via confidence, coverage, and conflict gates to trigger targeted self-correction, delivering stepwise, traceable diagnostic reasoning.
@@ -234,3 +237,11 @@ The full agent result (w/ Critic, ROUGE-L: 0.1948) is produced by the Task 3 por
   year={2026}
 }
 ```
+
+## License
+
+This project is licensed under the **Apache License 2.0** — see the [LICENSE](LICENSE) file for the full text.
+
+DermAgent redistributes adapted code from third-party projects under the
+`baselines/` directory. See [NOTICE](NOTICE) and the per-baseline
+`ATTRIBUTION.md` files for upstream sources, citations, and license status.

@@ -1,16 +1,15 @@
 # Baseline Reproduction
 
-This directory contains agent-based baseline implementations referenced in the paper's Table 1.
-Single-model MLLM baselines (GPT-4o, LLaVA-Med, etc.) are in the shared `benchmark/` framework
-at the project root — see [benchmark/README section in main README](../README.md).
+This directory contains **agent-based** baseline implementations referenced in the paper's Table 1.
+Single-model MLLM baselines (GPT-4o, LLaVA-Med, HuatuoGPT, DermoGPT, SkinVL-PubMM, Qwen3-VL, GPT-5.2)
+are in the shared `benchmark/` framework at the project root — see the main [README.md](../README.md).
 
 ## Directory Structure
 
 ```
 baselines/
 ├── MDAgents/           # MDAgents agent baseline (NeurIPS 2024)
-├── MedAgent-Pro/       # MedAgent-Pro agent baseline
-└── SkinVL/             # SkinVL-PubMM baseline (placeholder)
+└── MedAgent-Pro/       # MedAgent-Pro agent baseline (ICLR 2026)
 ```
 
 ## Prerequisites
@@ -80,4 +79,10 @@ python Derm_Evaluator.py --task 1 \
 
 ## 3. SkinVL-PubMM Baseline
 
-See `SkinVL/README.md` for setup instructions. Code and weights need to be placed in `baselines/SkinVL/` from the external server.
+SkinVL is a single-model MLLM baseline, not an agent. See the main
+[README.md](../README.md) for setup (MM-Skin code + model weights), then run:
+
+```bash
+cd benchmark
+python run.py --model skinvl --dataset HAM10000_500
+```

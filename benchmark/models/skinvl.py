@@ -18,7 +18,7 @@ from tqdm import tqdm
 from .base import VQAModel
 
 # MM-Skin repo path — contains the llava package used by SkinVL
-MMSKIN_PATH = Path(__file__).parent.parent.parent.parent / "MM-Skin"
+MMSKIN_PATH = Path(__file__).parent.parent.parent / "MM-Skin"
 
 
 class SkinVLModel(VQAModel):
@@ -208,9 +208,7 @@ class SkinVLModel(VQAModel):
         for path in tqdm(image_paths, desc=f"[{self.name}] Processing"):
             response = self.ask(path, prompt)
             pred_idx, conf = self._parse_response(response, class_names)
-            if pred_idx == -1:
-                pred_idx = 0
-                conf = 0.0
+            # Preserve -1 on parse failure (saved as predicted_class="unknown").
             predictions.append(pred_idx)
             confidences.append(conf)
             raw_outputs.append(response)

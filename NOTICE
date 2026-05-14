@@ -44,6 +44,12 @@ repository. See README.md for instructions.
             https://github.com/SiyuanYan1/MAKE
   - DermoGPT (dermatology VQA model)
             https://github.com/mendicant04/DermoGPT
+  - MM-Skin / SkinVL-PubMM (SkinVL baseline framework + weights)
+            Code:    https://github.com/ZwQ803/MM-Skin
+            Weights: https://huggingface.co/zwq803/SkinVL-PubMM
+            Paper:   Zhang et al., "MM-Skin: Enhancing Dermatology Vision-
+                     Language Model with an Image-Text Dataset Derived from
+                     Textbooks." arXiv:2505.06152.
   - Qwen3-VL, Qwen3-Embedding, Qwen3-Reranker
             https://huggingface.co/Qwen
   - Qdrant  (vector database)

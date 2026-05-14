@@ -85,6 +85,8 @@ The following external code/data directories are required but not included in th
 | `MAKE/src/` | Custom OpenCLIP fork for MAKE concept annotation | Clone from the [MAKE repository](https://github.com/SiyuanYan1/MAKE) |
 | `MAKE/concept_annotation/term_lists/ConceptTerms.json` | Concept term definitions for MAKE | Included in the MAKE repository above |
 | `model-weights/DermoGPT-RL` | DermoGPT-RL fine-tuned model weights | Download from the [DermoGPT repository](https://github.com/mendicant04/DermoGPT) |
+| `MM-Skin/` | LLaVA package used by the SkinVL-PubMM baseline | Clone from the [MM-Skin repository](https://github.com/ZwQ803/MM-Skin) |
+| `model-weights/SkinVL-PubMM` | SkinVL-PubMM model weights for the baseline | Download from [HuggingFace `zwq803/SkinVL-PubMM`](https://huggingface.co/zwq803/SkinVL-PubMM) |
 | `RAG/dermnet_chunks_cleaned.json` | DermNet guideline chunks for Text RAG | See Text RAG build instructions below |
 | `RAG/mayo_chunks_cleaned.json` | Mayo Clinic guideline chunks for Text RAG | See Text RAG build instructions below |
 | `datasets/Derm1M/` | Derm1M dataset for building image RAG index | Download from [Derm1M](https://github.com/SiyuanYan1/Derm1M) |

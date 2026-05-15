@@ -1,5 +1,6 @@
 # DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making
 
+[![arXiv](https://img.shields.io/badge/arXiv-2605.14403-b31b1b.svg)](https://arxiv.org/abs/2605.14403)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -229,11 +230,15 @@ The full agent result (w/ Critic, ROUGE-L: 0.1948) is produced by the Task 3 por
 
 ## Citation
 
+Paper: [arXiv:2605.14403](https://arxiv.org/abs/2605.14403) (MICCAI 2026, early accept).
+
 ```bibtex
-@inproceedings{dermagent2026,
-  title={DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making},
-  author={Anonymous},
-  booktitle={MICCAI},
+@article{liu2026dermagent,
+  title={DermAgent: A Self-Reflective Agentic System for Dermatological Image
+         Analysis with Multi-Tool Reasoning and Traceable Decision-Making},
+  author={Liu, Yize and Yan, Siyuan and Hu, Ming and Ju, Lie and Li, Xieji and
+          Tang, Feilong and Feng, Wei and Ge, Zongyuan},
+  journal={arXiv preprint arXiv:2605.14403},
   year={2026}
 }
 ```

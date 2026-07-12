@@ -11,13 +11,14 @@ Reproduce the two guideline corpora required by DermAgent without redistributing
 
 1. Read `references/pipeline.md` for the Python environment and complete pipeline.
 2. Read `references/final-schema.md` for the only supported output contract and synthetic example.
+3. Use `references/dermnet_terms.csv` and `references/mayo_diseases.csv` as the reference input manifests.
 
 ## Rules
 
 - Work in a separate directory and never overwrite an existing corpus without an explicit backup.
 - Preserve the canonical source URL in every final record.
 - Respect each source site's terms, robots guidance, and request-rate limits.
-- Do not add scraper implementations, URL manifests, downloaded images, article text, or generated corpus JSON to this skill or repository.
+- Do not add scraper implementations, downloaded images, article text, or generated corpus JSON to this skill or repository. Only the curated input manifests under `references/` are included.
 - Expose only the final JSON schema; do not document intermediate JSON schemas.
 - Write the validated outputs to `RAG/dermnet_chunks_cleaned.json` and `RAG/mayo_chunks_cleaned.json`.
 

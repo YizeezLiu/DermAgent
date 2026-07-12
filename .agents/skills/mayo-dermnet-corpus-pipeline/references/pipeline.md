@@ -19,18 +19,18 @@ Record the resolved versions with `python -m pip freeze` when publishing reprodu
 
 ### DermNet
 
-Use a curated topic manifest with:
+Use the bundled `dermnet_terms.csv` manifest with:
 
 - `term`: topic name used as the disease label
 - `url`: canonical DermNet page URL
 
-The reference scope contains 226 topics. Keep the full URL manifest outside this repository.
+The manifest contains 226 topics with unique, non-empty terms and DermNet URLs.
 
 ### Mayo Clinic
 
-Use a CSV manifest containing a `disease` column. Deduplicate that column before collection so each disease query is processed once.
+Use the bundled `mayo_diseases.csv` manifest containing a single `disease` column. Each row is already unique and non-empty.
 
-The reference scope contains 71 unique non-empty disease queries. Keep the full manifest outside this repository.
+The manifest contains 71 disease queries in first-occurrence order from the source guideline inventory.
 
 ## Stage 1: collect source pages
 

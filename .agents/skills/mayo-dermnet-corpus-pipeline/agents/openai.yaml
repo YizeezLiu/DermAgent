@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mayo + DermNet Corpus Pipeline"
+  short_description: "Reproduce DermAgent's guideline RAG corpus"
+  default_prompt: "Use $mayo-dermnet-corpus-pipeline to reproduce the Mayo Clinic and DermNet guideline corpora and validate their DermAgent JSON output."

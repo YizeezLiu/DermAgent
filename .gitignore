@@ -56,6 +56,9 @@ qdrant_storage/
 qdrant_server_storage/
 *.faiss
 
+# External/generated guideline corpora (not redistributed)
+RAG/*.json
+
 # Large data files
 *.npy
 *.npz

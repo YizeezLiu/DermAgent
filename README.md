@@ -18,6 +18,8 @@ DermAgent orchestrates seven specialist vision and language tools (PanDerm, MAKE
 
 ```
 DermAgent/
+├── .agents/skills/              # Repo-level Codex skills
+│   └── mayo-dermnet-corpus-pipeline/ # Guideline corpus reproduction contract
 ├── skin_agent/                  # Core agent framework
 │   ├── benchmark_agent.py       # Benchmark agent + Critic + AnswerParser
 │   ├── configs.py               # Dataset task configurations
@@ -91,8 +93,8 @@ The following external code/data directories are required but not included in th
 | `model-weights/DermoGPT-RL` | DermoGPT-RL fine-tuned model weights | Download from the [DermoGPT repository](https://github.com/mendicant04/DermoGPT) |
 | `MM-Skin/` | LLaVA package used by the SkinVL-PubMM baseline | Clone from the [MM-Skin repository](https://github.com/ZwQ803/MM-Skin) |
 | `model-weights/SkinVL-PubMM` | SkinVL-PubMM model weights for the baseline | Download from [HuggingFace `zwq803/SkinVL-PubMM`](https://huggingface.co/zwq803/SkinVL-PubMM) |
-| `RAG/dermnet_chunks_cleaned.json` | DermNet guideline chunks for Text RAG | See Text RAG build instructions below |
-| `RAG/mayo_chunks_cleaned.json` | Mayo Clinic guideline chunks for Text RAG | See Text RAG build instructions below |
+| `RAG/dermnet_chunks_cleaned.json` | DermNet guideline chunks for Text RAG | Follow the [corpus pipeline skill](.agents/skills/mayo-dermnet-corpus-pipeline/SKILL.md) |
+| `RAG/mayo_chunks_cleaned.json` | Mayo Clinic guideline chunks for Text RAG | Follow the [corpus pipeline skill](.agents/skills/mayo-dermnet-corpus-pipeline/SKILL.md) |
 | `datasets/Derm1M/` | Derm1M dataset for building image RAG index | Download from [Derm1M](https://github.com/SiyuanYan1/Derm1M) |
 
 For Text RAG models, pre-download the embedding and reranker models into `model-weights/`:
@@ -118,6 +120,8 @@ Download the following datasets and place images in the expected directories:
 Benchmark CSV metadata (split definitions) are included in `data/`.
 
 ### 5. RAG Vector Database
+
+To reproduce the Mayo Clinic and DermNet source corpora without redistributing scraper code or article content, follow the repo-level [Mayo + DermNet corpus pipeline skill](.agents/skills/mayo-dermnet-corpus-pipeline/SKILL.md). It documents the Python environment, final pipeline, and JSON contract expected by `scripts/build_qdrant_rag.py`.
 
 Install and start Qdrant (vector database server):
 

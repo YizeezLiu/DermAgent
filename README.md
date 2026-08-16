@@ -1,3 +1,5 @@
+
+
 # DermAgent: A Self-Reflective Agentic System for Dermatological Image Analysis with Multi-Tool Reasoning and Traceable Decision-Making
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.14403-b31b1b.svg)](https://arxiv.org/abs/2605.14403)
@@ -190,7 +192,7 @@ Commands to reproduce baseline results (see `baselines/README.md` for agent base
 cd benchmark && python run.py --model gpt4o --dataset HAM10000_500
 
 # MDAgents agent baseline
-cd baselines/MDAgents && python run_derm_benchmark.py --dataset HAM10000 --difficulty basic --model gpt-4o
+cd baselines/MDAgents && python run_derm_benchmark.py --dataset HAM10000 --difficulty basic --model gpt-4o --num_samples 500
 
 # MedAgent-Pro agent baseline
 cd baselines/MedAgent-Pro && python Derm_Case_level.py --task 1 \
